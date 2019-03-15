@@ -1,4 +1,4 @@
-'use strict'
+const {RIVEN, Ø}  = require('../riven')
 
 RIVEN.lib.Add = function (id, rect) {
   RIVEN.Node.call(this, id, rect)

@@ -1,7 +1,11 @@
 {
   "standard": {
-    "globals": [ 
-      "RIVEN", "Ø"
+    "globals": [
+      "RIVEN",
+      "Ø"
     ]
+  },
+  "dependencies": {
+    "snabbdom": "^0.7.3"
   }
 }

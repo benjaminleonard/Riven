@@ -1,4 +1,4 @@
-'use strict'
+const {RIVEN, Ø}  = require('../riven')
 
 RIVEN.lib.Mesh = function (id, rect, children, entry, exit) {
   RIVEN.Node.call(this, id, rect)

@@ -15,9 +15,9 @@
   @ Main
 /-------------------*/
 
-body { padding:20px; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20'><circle cx='10' cy='10' r='0.5' fill='#555'></circle></svg>"); background-color:#000; font-family: 'input_mono_medium'; font-size:9px; background-size:20px 20px;}
+body { padding:0; margin:0; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20'><circle cx='10' cy='10' r='0.5' fill='#555'></circle></svg>"); background-color:#000; font-family: 'input_mono_medium'; font-size:9px; background-size:20px 20px;}
 
-svg#riven { padding:50px 10px; width:200%; height:150%; position: fixed; left:0px; top:0px; stroke-width: 10;stroke: white;stroke-linecap: round;}
+svg#riven { padding:0; margin:0; width:200%; height:150%; position: fixed; left:0px; top:0px; stroke-width: 10;stroke: white;stroke-linecap: round;}
 svg#riven.magnet { transition: all 250ms }
 
 /* Node */
@@ -36,14 +36,50 @@ svg#riven g#nodes g.node g.port {  }
 svg#riven g#nodes g.node g.port path { fill:var(--background); stroke: var(--f_high); stroke-width: var(--stroke);}
 svg#riven g#nodes g.node g.port.in path { fill:var(--f_high); }
 svg#riven g#nodes g.node g.port.answer path { fill:var(--f_high); }
-svg#riven g#nodes g.node path.glyph { stroke:var(--f_med); fill:none; stroke-width:10; stroke-linejoin: round; stroke-linecap: round  }
+svg#riven g#nodes g.node path.glyph { stroke:var(--f_high); fill:none; stroke-width:10; stroke-linejoin: round; stroke-linecap: round  }
 svg#riven g#nodes g.node text { fill:var(--f_high); }
 
 /* Route */
 svg#riven g#routes { fill:transparent; }
 svg#riven g#routes path.route { stroke-width:2; stroke:var(--f_low) }
+svg#riven g#routes .route { cursor: pointer; }
+svg#riven g#routes path.route-hover-area {
+  stroke-width: 20px;
+  stroke: transparent;
+}
+svg#riven g#routes .route-wrapper .route-disconnect { visibility: hidden; stroke-width: 3px; stroke-linecap: square; }
+svg#riven g#routes .route-wrapper:hover .route-disconnect { visibility: visible; }
 svg#riven g#routes path.route.request { stroke-dasharray: 0,5; stroke-dashoffset: -250; animation: dash 20s linear infinite; }
 svg#riven g#routes path.route.output { stroke:var(--f_high); stroke-dasharray: 20,5; stroke-dashoffset: 250; animation: dash 20s linear infinite; }
 svg#riven g#routes path.route.bidirectional { stroke-dasharray: 10,5; stroke-dashoffset: 200; animation: dash 20s linear infinite;  }
-
 @keyframes dash { to { stroke-dashoffset: 0;} }
+
+svg#riven, 
+#output {
+  width: 50vw;
+  
+  position: fixed;
+  top: 0;
+  left: 50vw;
+  bottom: 0;
+}
+
+svg#riven {
+  left: 0;
+}
+
+#output {
+  background-color: white;
+  
+  font-family: sans-serif;
+}
+
+#output * {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  
+  transform: translate(-50%, -50%);
+    
+  font-size: 5rem;  
+}

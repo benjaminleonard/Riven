@@ -1,4 +1,4 @@
-'use strict'
+const {RIVEN, Ø}  = require('../riven')
 
 RIVEN.lib.Bang = function (id, rect) {
   RIVEN.Node.call(this, id, rect)
@@ -6,6 +6,10 @@ RIVEN.lib.Bang = function (id, rect) {
 
   this.receive = function (q) {
     this.label = `${this.id}(bang!)`
+    this.send(this)
+  }
+  
+  this.handleClick = (node) => {
     this.send(this)
   }
 }
