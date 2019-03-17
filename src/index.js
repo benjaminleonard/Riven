@@ -23,13 +23,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     Ø("string").create({x:8,y:10},lib.Value,'APPLE')
     Ø("text").create({x:14,y:14},lib.Text)
-    Ø("font").create({x:14,y:18},lib.Font, 'Studio Pro')
+    Ø("font").create({x:14,y:18},lib.Font, 'Times New Roman')
 
     Ø("keyInput").create({x:8,y:14},lib.KeyboardInput)
     Ø("console").create({x:20,y:10},lib.Console)
 
     Ø("output").create({x:20,y:14},lib.Output)
-    
+
     Ø("string").connect(["console"])
     Ø("bang").connect(["keyInput"])
     Ø("interval").connect(["string"])

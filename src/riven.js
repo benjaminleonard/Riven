@@ -1,4 +1,5 @@
 // "Don't forget, the portal combination's in my journal."" — Catherine
+const Snabbdom = require('snabbdom-pragma')
 
 const snabbdom = require('snabbdom')
 const patch = snabbdom.init([
@@ -20,10 +21,8 @@ function Riven () {
   const PORT_TYPES = { default: 0, input: 1, output: 2, request: 3, answer: 4, entry: 5, exit: 6 }
 
   this.setup = function () {
-    const container = document.getElementById('container')
-    this.el = h('svg#riven', h('g#nodes'), h('g#routes'))
-    patch(container, this.el)
-    
+    this.el = document.getElementById('container')
+
     this.cur = new RIVEN.Cursor()
     this.cur.install(this)
   }
@@ -46,17 +45,22 @@ function Riven () {
     const routes = this.renderRoutes()
 
     if(nodes.length == 0 || routes.length == 0) return this.el
-    
-    return h('svg#riven', 
-    {
-      style: {
-        transform: `translate(${parseInt(this.cur.offset.x)}px,${parseInt(this.cur.offset.y)}px)`
-      }
-    },
-    [
-      h('g#routes', routes),
-      h('g#nodes', nodes)
-    ])
+
+    return (
+      <svg
+        id="riven"
+        style={{
+          transform: `translate(${parseInt(this.cur.offset.x)}px,${parseInt(this.cur.offset.y)}px)`
+        }}
+      >
+        <g id="routes">
+          {routes}
+        </g>
+        <g id="nodes">
+          {nodes}
+        </g>
+      </svg>
+    )
   }
 
   this.renderNodes = function () {
@@ -84,9 +88,6 @@ function Riven () {
   this.renderRoute = function (node) {
     const routes = this.drawRoutes(node)
 
-    return h('g',
-    routes)
-
     return routes
   }
 
@@ -105,28 +106,30 @@ function Riven () {
     const ports = this.drawPorts(node)
     const glyph = this.drawGlyph(node)
 
-    return h('g',
-    {
-      attrs: {
-        class: 'node',
-        id: `node_${node.id}`
-      },
-      on: {
-        click: [this.nodeClickHandler, node]
-      }
-    }, [
-      h('rect',
-        {attrs:
-          {rx: 2, ry: 2, x: rect.x, y: rect.y - (GRID_SIZE / 2), width: rect.w, height: rect.h, class: node.children.length === 0 ? 'fill' : ''}
-        }),
-      h('text',
-        {attrs:
-          {x: rect.x + (rect.w / 2) + (GRID_SIZE * 0.3), y: rect.y + rect.h + (GRID_SIZE * 0.2)}
-        }, node.label
-      ),
-      h('g', ports),
-      h('g', glyph)
-    ])
+    return (
+      <g
+        id={`node_${node.id}`}
+        className="node"
+        on-click={[this.nodeClickHandler, node]}
+      >
+        <rect
+          rx={2}
+          ry={2}
+          x={rect.x}
+          y={rect.y - (GRID_SIZE / 2)}
+          width={rect.w}
+          height={rect.h}
+        />
+        <text
+          x={rect.x + (rect.w / 2) + (GRID_SIZE * 0.3)}
+          y={rect.y + rect.h + (GRID_SIZE * 0.2)}
+        >
+          {node.label}
+        </text>
+        {ports}
+        {glyph}
+      </g>
+    )
   }
 
   this.nodeClickHandler = (node) => {
@@ -149,43 +152,35 @@ function Riven () {
     const pos = port ? getPortPosition(port) : { x: 0, y: 0 }
     const r = GRID_SIZE / 6
 
-    return h('svg',
-    {
-      attrs: {
-        id: `${port.host.id}_port_${port.id}`,
-        x: pos.x - r,
-        y: pos.y - r
-      },
-      on: {
-        click: [this.portClickHandler, port]
-      }
-    }, h('g',
-          {
-            attrs: {
-              class: `port ${port.id}`
-            }
-          }
-        ,
-        h('path',
-              {
-                attrs: {d: `M${r},0 L${r*2},${r} L${r},${r*2} L0,${r} Z`}
-              }
-            )
-        )
-      )
+    return (
+      <svg
+        id={`${port.host.id}_port_${port.id}`}
+        x={pos.x - r}
+        y={pos.y - r}
+        on-click={[this.portClickHandler, port]}
+      >
+        <g
+          className={`port ${port.id}`}
+        >
+          <path
+            d={`M${r},0 L${r*2},${r} L${r},${r*2} L0,${r} Z`}
+          />
+        </g>
+      </svg>
+    )
   }
-  
+
   this.drawGlyph = (node) => {
     const rect = getRect(node)
-    
-    return h('path',
-      {
-        attrs: {
-          class: 'glyph',
-          transform: `translate(${rect.x + (GRID_SIZE / 4)},${rect.y - (GRID_SIZE / 4)}) scale(0.1)`,
-          d: `${node.glyph}`
-        }
-      }
+
+    return (
+      <path
+        className="glyph"
+        style={{
+          transform: `translate(${rect.x + (GRID_SIZE / 4)}px, ${rect.y - (GRID_SIZE / 4)}px) scale(0.1)`
+        }}
+        d={node.glyph}
+      />
     )
   }
 
@@ -205,19 +200,13 @@ function Riven () {
         routes.push(this.drawConnection(port, route))
       }
     }
-    
+
     return routes
   }
 
   this.drawConnection = (a, b) => {
     if (isBidirectional(a.host, b.host)) {
       return a.type !== PORT_TYPES.output ? this.drawConnectionBidirectional(a, b) : ''
-    }
-    if (a.type === PORT_TYPES.entry) {
-      return this.drawConnectionEntry(a, b)
-    }
-    if (b.type === PORT_TYPES.exit) {
-      return this.drawConnectionExit(a, b)
     }
     return a.type === PORT_TYPES.output || a.type === PORT_TYPES.output ? this.drawConnectionOutput(a, b) : this.drawConnectionRequest(a, b)
   }
@@ -235,99 +224,71 @@ function Riven () {
     return false
   }
 
+  const routePath = (posA, posB, posM) => `M${posA.x},${posA.y} L${posA.x},${posA.y + GRID_SIZE} L${posA.x},${posM.y} L${posB.x},${posM.y} L${posB.x},${posB.y - GRID_SIZE} L${posB.x},${posB.y}`
+  const disconnectPath = (posM, r) => `M${posM.x - r},${posM.y - r} L${posM.x + r},${posM.y + r} M${posM.x + r},${posM.y - r} L${posM.x - r},${posM.y + r}`
+
   this.drawConnectionOutput = (a, b) => {
     const posA = getPortPosition(a)
     const posB = getPortPosition(b)
     const posM = middle(posA, posB)
     const posC1 = { x: (posM.x + (posA.x + GRID_SIZE)) / 2, y: posA.y }
     const posC2 = { x: (posM.x + (posB.x - GRID_SIZE)) / 2, y: posB.y }
-            
+
     const r = GRID_SIZE / 4
 
-    return h('g', {
-      attrs: { class: 'route-wrapper' }
-    },
-    [
-      h('path',
-        {
-          attrs: {
-            class: `route output`,
-            d: `M${posA.x},${posA.y} L${posA.x + GRID_SIZE},${posA.y}
-                Q${posC1.x},${posC1.y} ${posM.x},${posM.y}
-                Q ${posC2.x},${posC2.y} ${posB.x - GRID_SIZE},${posB.y}
-                L${posB.x},${posB.y}`
-          }
-        }
-      ),
-      h('path',
-        {
-          attrs: {
-            class: `route route-hover-area`,
-            d: `M${posA.x},${posA.y} L${posA.x + GRID_SIZE},${posA.y}
-                Q${posC1.x},${posC1.y} ${posM.x},${posM.y}
-                Q ${posC2.x},${posC2.y} ${posB.x - GRID_SIZE},${posB.y}
-                L${posB.x},${posB.y}`
-          },
-          on: {
-            click: [this.routeClickHandler, a, b]
-          }
-        }
-      ),
-      h('path',
-        {
-          attrs: {d: `M${posM.x - r},${posM.y - r} L${posM.x + r},${posM.y + r} M${posM.x + r},${posM.y - r} L${posM.x - r},${posM.y + r}`, class: 'route-disconnect'},
-          on: {
-            click: [this.routeClickHandler, a, b]
-          }
-        }
-      )
-    ])
+    return (
+      <g
+        className="route-wrapper"
+      >
+        <path
+          className="route output"
+          d={routePath(posA, posB, posM)}
+        />
+        <path
+          className="route route-hover-area"
+          d={routePath(posA, posB, posM)}
+          on-click={[this.routeClickHandler, a, b]}
+        />
+        <path
+        className="route route-disconnect"
+          d={disconnectPath(posM, r)}
+          on-click={[this.routeClickHandler, a, b]}
+        />
+      </g>
+    )
   }
-  
+
   this.routeClickHandler = (a, b) => {
     a.disconnect(b.host.id)
     this.render()
   }
 
-  this.drawConnectionEntry = (a, b) => {
-    const posA = getPortPosition(a)
-    const posB = getPortPosition(b)
-
-    return h('path', {attrs: {
-        class: `route entry`,
-        d: `M${posA.x},${posA.y} L${posA.x + GRID_SIZE},${posA.y}
-            L${posA.x + GRID_SIZE},${posA.y}
-            L${posA.x + GRID_SIZE},${posB.y}
-            L${posB.x},${posB.y}`
-      }}
-    )
-  }
-
-  this.drawConnectionExit = (a, b) => {
-    const posA = getPortPosition(a)
-    const posB = getPortPosition(b)
-
-    return h('path', {attrs: {
-        class: `route exit`,
-        d: `M${posA.x},${posA.y} L${posA.x + GRID_SIZE},${posA.y}
-            L${posB.x - GRID_SIZE},${posA.y}
-            L${posB.x - GRID_SIZE},${posB.y}
-            L${posB.x},${posB.y}`
-      }}
-    )
-  }
-
   this.drawConnectionRequest = (a, b) => {
     const posA = getPortPosition(a)
     const posB = getPortPosition(b)
+    const posM = middle(posA, posB)
 
-    return h('path', {attrs: {
-        class: `route request`,
-        d: `M${posA.x},${posA.y}
-            L${posA.x},${posA.y + GRID_SIZE}
-            L${posB.x},${posA.y + GRID_SIZE}
-            L${posB.x},${posB.y}`
-      }}
+    const r = GRID_SIZE / 4
+
+    return (
+      <g
+        className="route-wrapper"
+      >
+        <path
+          className="route request"
+          d={routePath(posA, posB, posM)}
+        />
+        <path
+          className="route route-hover-area"
+          d={routePath(posA, posB, posM)}
+          on-click={[this.routeClickHandler, a, b]}
+        />
+        <path
+          className="route route-disconnect"
+          d={disconnectPath(posM, r)}
+          on-click={[this.routeClickHandler, a, b]}
+        />
+      </g>
     )
   }
 
@@ -335,6 +296,13 @@ function Riven () {
     const posA = getPortPosition(a)
     const posB = getPortPosition(b)
     const posM = middle(posA, posB)
+
+    const r = GRID_SIZE / 4
+
+    const path = `M${posA.x},${posA.y} L${posA.x},${posA.y + GRID_SIZE}
+        L${posA.x},${posM.y} L${posB.x},${posM.y}
+        L${posB.x},${posB.y - GRID_SIZE} L${posB.x},${posB.y}`
+
 
     return h('path', {attrs: {
         class: `route bidirectional`,
@@ -430,7 +398,7 @@ RIVEN.Node = function (id, rect = { x: 0, y: 0, w: 2, h: 2 }) {
     } else if (Ø(q)) {
       const port = (syphon ? this.ports.request : this.ports.output)
       const target = syphon ? Ø(q).ports.answer : Ø(q).ports.input
-      
+
       if (!port) { console.warn(`Unknown: ${q}`); return }
       port.connect(target)
     } else {
@@ -517,16 +485,14 @@ RIVEN.Node = function (id, rect = { x: 0, y: 0, w: 2, h: 2 }) {
 
     this.connect = function (port) {
       if (!port) { console.warn(`Unknown port from: ${this.host.id}`); return }
-      
+
       this.routes.push(port)
     }
-    
+
     this.disconnect = function (node) {
       this.routes = this.routes.filter((item) => {
         return item.host.id !== node
       })
-      
-      // console.log(host);
     }
   }
 }
@@ -535,18 +501,18 @@ RIVEN.Cursor = function () {
   this.pos = { x: 0, y: 0 }
   this.offset =  { x: 0, y: 0 }
   this.origin = null
-  
+
   this.install = function (host) {
     this.host = host
     document.addEventListener('mousedown', (e) => { this.touch({ x: e.clientX, y: e.clientY }, true); e.preventDefault() })
     document.addEventListener('mousemove', (e) => { this.touch({ x: e.clientX, y: e.clientY }, false); e.preventDefault() })
     document.addEventListener('mouseup', (e) => { this.touch({ x: e.clientX, y: e.clientY }); e.preventDefault() })
   }
-  
+
   this.update = function () {
     this.host.render()
   }
-  
+
   this.touch = function (pos, click = null) {
     if (click === true) {
       this.origin = pos

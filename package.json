@@ -5,7 +5,23 @@
       "Ø"
     ]
   },
+  "devDependencies": {
+    "@babel/core": "^7.3.4",
+    "@babel/plugin-transform-react-jsx": "^7.3.0",
+    "@babel/preset-env": "^7.3.4",
+    "babel-loader": "^8.0.5",
+    "eslint": "^5.15.2",
+    "eslint-loader": "^2.1.2",
+    "eslint-plugin-react": "^7.12.4",
+    "npm": "^6.9.0",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0"
+  },
+  "scripts": {
+    "build": "webpack --config webpack.config.js"
+  },
   "dependencies": {
-    "snabbdom": "^0.7.3"
+    "snabbdom": "^0.7.3",
+    "snabbdom-pragma": "^2.8.0"
   }
 }
