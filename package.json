@@ -21,6 +21,7 @@
     "build": "webpack --config webpack.config.js"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "snabbdom": "^0.7.3",
     "snabbdom-pragma": "^2.8.0"
   }

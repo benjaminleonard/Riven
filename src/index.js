@@ -7,10 +7,11 @@ require('./nodes/value')
 require('./nodes/interval')
 require('./nodes/console')
 require('./nodes/bang')
-require('./nodes/output')
+require('./nodes/InlineOutput')
 require('./nodes/text')
 require('./nodes/keyboardInput')
 require('./nodes/font')
+require('./nodes/randomName')
 
 document.addEventListener('DOMContentLoaded', () => {
   RIVEN.setup()
@@ -19,21 +20,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   RIVEN.create = (append = true) => {
     Ø("bang").create({x:2,y:14},lib.Bang)
-    Ø("interval").create({x:2,y:10},lib.Interval,2000)
+    Ø("interval").create({x:2,y:10},lib.Interval,5000)
 
-    Ø("string").create({x:8,y:10},lib.Value,'APPLE')
+    Ø("randomName").create({x:8,y:14},lib.RandomName)
     Ø("text").create({x:14,y:14},lib.Text)
-    Ø("font").create({x:14,y:18},lib.Font, 'Times New Roman')
+    Ø("font").create({x:14,y:18},lib.Font, 'Chronicle Display')
 
-    Ø("keyInput").create({x:8,y:14},lib.KeyboardInput)
+    Ø("keyInput").create({x:8,y:18},lib.KeyboardInput)
     Ø("console").create({x:20,y:10},lib.Console)
 
-    Ø("output").create({x:20,y:14},lib.Output)
+    Ø("output").create({x:24,y:14},lib.InlineOutput)
 
-    Ø("string").connect(["console"])
+    Ø("randomName").connect(["console"])
     Ø("bang").connect(["keyInput"])
-    Ø("interval").connect(["string"])
-    Ø("keyInput").connect(["text"])
+    Ø("interval").connect(["randomName"])
+    Ø("randomName").connect(["text"])
     Ø("text").syphon(["font"])
     Ø("text").connect(["output"])
     // Ø("bang").ports[1].disconnect(Ø("string"))

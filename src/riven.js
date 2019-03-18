@@ -43,23 +43,32 @@ function Riven () {
   this.concatNodes = function () {
     const nodes = this.renderNodes()
     const routes = this.renderRoutes()
+    const html = this.renderHTMLTags()
 
     if(nodes.length == 0 || routes.length == 0) return this.el
 
     return (
-      <svg
-        id="riven"
+      <main
+        id="container"
         style={{
           transform: `translate(${parseInt(this.cur.offset.x)}px,${parseInt(this.cur.offset.y)}px)`
         }}
       >
-        <g id="routes">
-          {routes}
-        </g>
-        <g id="nodes">
-          {nodes}
-        </g>
-      </svg>
+        <div id="inline_html">
+          {html}
+        </div>
+        
+        <svg
+          id="riven"
+        >
+          <g id="routes">
+            {routes}
+          </g>
+          <g id="nodes">
+            {nodes}
+          </g>
+        </svg>
+      </main>
     )
   }
 
@@ -80,6 +89,21 @@ function Riven () {
     for(const id in this.network) {
       const node = this.network[id]
       nodeData.push(this.renderRoute(node))
+    }
+
+    return nodeData
+  }
+
+  this.renderHTMLTags = function () {
+    let nodeData = []
+
+    for(const id in this.network) {
+      const node = this.network[id]
+      const tag = this.renderHTMLTag(node)
+
+      if(node.html) {
+        nodeData.push(tag)
+      }
     }
 
     return nodeData
@@ -129,6 +153,27 @@ function Riven () {
         {ports}
         {glyph}
       </g>
+    )
+  }
+
+  this.renderHTMLTag = (node) => {
+    const rect = getRect(node)
+    const html = this.drawHTMLTag(node)
+    const width = node.inlineWidth * GRID_SIZE
+    const height = node.inlineHeight * GRID_SIZE
+
+    return (
+      <div
+        id={`html_${node.id}`}
+        className='inline-output'
+        style={{
+          transform: `translate(${rect.x + (GRID_SIZE*2)}px, ${rect.y + (GRID_SIZE * 1.5) - height}px)`,
+          width: `${width}px`,
+          height: `${height}px`
+        }}
+      >
+        {html}
+      </div>
     )
   }
 
@@ -182,6 +227,19 @@ function Riven () {
         d={node.glyph}
       />
     )
+  }
+
+  this.drawHTMLTag = (node) => {
+    const rect = getRect(node)
+    const html = node.html
+
+    // console.log(html);
+
+    // if(!html) return
+
+    // html.style.transform = `translate(${rect.x + (GRID_SIZE / 4)}px, ${rect.y - (GRID_SIZE / 4)}px)`
+
+    return html
   }
 
   this.portClickHandler = (port) => {
@@ -370,6 +428,7 @@ RIVEN.Node = function (id, rect = { x: 0, y: 0, w: 2, h: 2 }) {
   this.label = id
   this.name = this.constructor.name.toLowerCase()
   this.glyph = 'M155,65 A90,90 0 0,1 245,155 A90,90 0 0,1 155,245 A90,90 0 0,1 65,155 A90,90 0 0,1 155,65 Z'
+  this.sending = false
 
   this.setup = function (pos) {
     this.ports.input = new this.Port(this, 'in', PORT_TYPES.input)
@@ -426,7 +485,13 @@ RIVEN.Node = function (id, rect = { x: 0, y: 0, w: 2, h: 2 }) {
       route.host.receive(payload, this, route)
     }
 
+    this.sending = true
+    this.animateSend()
     RIVEN.render()
+  }
+
+  this.animateSend = function () {
+
   }
 
   this.receive = function (q, origin, route) {

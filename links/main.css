@@ -2,20 +2,24 @@
   @ Styleguide
 /-------------------*/
 
-:root { 
-  --f_high: #fff; 
-  --f_med: #999; 
-  --f_low: #444; 
+:root {
+  --f_high: #fff;
+  --f_med: #999;
+  --f_low: #444;
   --background: #000;
-  --stroke: 1px; 
+  --stroke: 1px;
   --wire: 2px;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 /*-------------------/
   @ Main
 /-------------------*/
 
-body { padding:0; margin:0; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20'><circle cx='10' cy='10' r='0.5' fill='#555'></circle></svg>"); background-color:#000; font-family: 'input_mono_medium'; font-size:9px; background-size:20px 20px;}
+body { padding:0; margin:0; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20'><circle cx='10' cy='10' r='0.5' fill='#555'></circle></svg>"); background-color:#000; font-family: 'input_mono_medium'; font-size:9px; color: white; background-size:20px 20px;}
 
 svg#riven { padding:0; margin:0; width:200%; height:150%; position: fixed; left:0px; top:0px; stroke-width: 10;stroke: white;stroke-linecap: round;}
 svg#riven.magnet { transition: all 250ms }
@@ -54,23 +58,50 @@ svg#riven g#routes path.route.output { stroke:var(--f_high); stroke-dasharray: 2
 svg#riven g#routes path.route.bidirectional { stroke-dasharray: 10,5; stroke-dashoffset: 200; animation: dash 20s linear infinite;  }
 @keyframes dash { to { stroke-dashoffset: 0;} }
 
-svg#riven, 
+.inline-output {
+  background-color: var(--background);
+  border: var(--stroke) solid var(--f_high);
+  border-radius: 2px;
+
+  text-align: center;
+  padding: 20px;
+  font-size: 2rem;
+
+  position: relative;
+}
+
+.inline-output * {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+/* svg#riven,
 #output {
   width: 50vw;
-  
+
   position: fixed;
   top: 0;
   left: 50vw;
   bottom: 0;
-}
+} */
 
-svg#riven {
+/* svg#riven {
   left: 0;
 }
 
 #output {
   background-color: white;
-  
+
   font-family: sans-serif;
 }
 
@@ -78,8 +109,8 @@ svg#riven {
   position: absolute;
   top: 50%;
   left: 50%;
-  
+
   transform: translate(-50%, -50%);
-    
-  font-size: 5rem;  
-}
+
+  font-size: 5rem;
+} */

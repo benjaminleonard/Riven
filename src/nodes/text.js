@@ -1,3 +1,4 @@
+const Snabbdom = require('snabbdom-pragma')
 const {RIVEN, Ø}  = require('../riven')
 
 RIVEN.lib.Text = function (id, rect, val) {
@@ -6,10 +7,8 @@ RIVEN.lib.Text = function (id, rect, val) {
   this.glyph = 'M60,60 L60,60 L240,60 L240,240 L60,240 Z M240,150 L240,150 L150,150 L150,240'
   this.label = val ? `${this.id}=${val}` : this.id
 
-  this.html = function (q, font) {
-    return `
-      <h1 style='font-family: ${font}'>${q}</h1>
-    `
+  this.el = function (q, font) {
+    return <h1 style={{fontFamily: font}}>{q}</h1>
   }
 
   this.receive = function (q) {
@@ -23,6 +22,6 @@ RIVEN.lib.Text = function (id, rect, val) {
       }
     }
 
-    this.send(this.html(q, font))
+    this.send(this.el(q, font))
   }
 }
