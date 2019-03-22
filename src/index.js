@@ -10,8 +10,9 @@ require('./nodes/bang')
 require('./nodes/InlineOutput')
 require('./nodes/text')
 require('./nodes/keyboardInput')
-require('./nodes/font')
+require('./nodes/attribute')
 require('./nodes/randomName')
+require('./nodes/sine')
 
 document.addEventListener('DOMContentLoaded', () => {
   RIVEN.setup()
@@ -20,22 +21,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
   RIVEN.create = (append = true) => {
     Ø("bang").create({x:2,y:14},lib.Bang)
-    Ø("interval").create({x:2,y:10},lib.Interval,5000)
+    Ø("interval").create({x:2,y:18},lib.Interval,16.67)
 
-    Ø("randomName").create({x:8,y:14},lib.RandomName)
+    // Ø("keyInput").create({x:8,y:14},lib.KeyboardInput)
+    Ø("string").create({x:8,y:14},lib.Value, "Test")
+    // Ø("randomName").create({x:8,y:14},lib.RandomName)
     Ø("text").create({x:14,y:14},lib.Text)
-    Ø("font").create({x:14,y:18},lib.Font, 'Chronicle Display')
+    Ø("fontFamily").create({x:12,y:22},lib.Attribute, {fontFamily: 'Chronicle Display'})
+    Ø("fontSize").create({x:16,y:18},lib.Attribute, {fontSize: '40'})
+    // Ø("fontSize").create({x:14,y:18},lib.FontSize, 'Chronicle Display')
+    
+    Ø("sine").create({x:8,y:22},lib.Sine)
 
-    Ø("keyInput").create({x:8,y:18},lib.KeyboardInput)
-    Ø("console").create({x:20,y:10},lib.Console)
+    // Ø("keyInput").create({x:4,y:18},lib.KeyboardInput)
+    // Ø("console").create({x:20,y:10},lib.Console)
 
     Ø("output").create({x:24,y:14},lib.InlineOutput)
-
-    Ø("randomName").connect(["console"])
+    
+    Ø("sine").connect(["fontSize"])
+    Ø("string").connect(["text"])
+    Ø("interval").connect(["string"])
     Ø("bang").connect(["keyInput"])
-    Ø("interval").connect(["randomName"])
-    Ø("randomName").connect(["text"])
-    Ø("text").syphon(["font"])
+    Ø("interval").connect(["sine"])
+    Ø("keyInput").connect(["text"])
+    Ø("text").syphon(["fontFamily", "fontSize"])
     Ø("text").connect(["output"])
     // Ø("bang").ports[1].disconnect(Ø("string"))
 

@@ -282,7 +282,8 @@ function Riven () {
     return false
   }
 
-  const routePath = (posA, posB, posM) => `M${posA.x},${posA.y} L${posA.x},${posA.y + GRID_SIZE} L${posA.x},${posM.y} L${posB.x},${posM.y} L${posB.x},${posB.y - GRID_SIZE} L${posB.x},${posB.y}`
+  const outputPath = (posA, posB, posM, posC1, posC2) => `M${posA.x},${posA.y} L${posA.x + GRID_SIZE},${posA.y} Q${posC1.x},${posC1.y} ${posM.x},${posM.y} Q ${posC2.x},${posC2.y} ${posB.x - GRID_SIZE},${posB.y} L${posB.x},${posB.y}`
+  const bidirectionalRoutePath = (posA, posB, posM) => `M${posA.x},${posA.y} L${posA.x},${posA.y + GRID_SIZE} L${posA.x},${posM.y} L${posB.x},${posM.y} L${posB.x},${posB.y - GRID_SIZE} L${posB.x},${posB.y}`
   const disconnectPath = (posM, r) => `M${posM.x - r},${posM.y - r} L${posM.x + r},${posM.y + r} M${posM.x + r},${posM.y - r} L${posM.x - r},${posM.y + r}`
 
   this.drawConnectionOutput = (a, b) => {
@@ -300,11 +301,11 @@ function Riven () {
       >
         <path
           className="route output"
-          d={routePath(posA, posB, posM)}
+          d={outputPath(posA, posB, posM, posC1, posC2)}
         />
         <path
           className="route route-hover-area"
-          d={routePath(posA, posB, posM)}
+          d={outputPath(posA, posB, posM, posC1, posC2)}
           on-click={[this.routeClickHandler, a, b]}
         />
         <path
@@ -334,11 +335,11 @@ function Riven () {
       >
         <path
           className="route request"
-          d={routePath(posA, posB, posM)}
+          d={bidirectionalRoutePath(posA, posB, posM)}
         />
         <path
           className="route route-hover-area"
-          d={routePath(posA, posB, posM)}
+          d={bidirectionalRoutePath(posA, posB, posM)}
           on-click={[this.routeClickHandler, a, b]}
         />
         <path
@@ -428,7 +429,6 @@ RIVEN.Node = function (id, rect = { x: 0, y: 0, w: 2, h: 2 }) {
   this.label = id
   this.name = this.constructor.name.toLowerCase()
   this.glyph = 'M155,65 A90,90 0 0,1 245,155 A90,90 0 0,1 155,245 A90,90 0 0,1 65,155 A90,90 0 0,1 155,65 Z'
-  this.sending = false
 
   this.setup = function (pos) {
     this.ports.input = new this.Port(this, 'in', PORT_TYPES.input)
@@ -485,13 +485,7 @@ RIVEN.Node = function (id, rect = { x: 0, y: 0, w: 2, h: 2 }) {
       route.host.receive(payload, this, route)
     }
 
-    this.sending = true
-    this.animateSend()
     RIVEN.render()
-  }
-
-  this.animateSend = function () {
-
   }
 
   this.receive = function (q, origin, route) {
