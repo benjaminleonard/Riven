@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Ø("console").create({x:24,y:30},lib.Console)
 
-    Ø("sine").create({x:8,y:28},lib.Sine)
+    Ø("sine").create({x:8,y:28},lib.Sine, 0.05)
     Ø("remap").create({x:13,y:28},lib.Remap, [-1, 1, 10, 80, 2])
 
     // Ø("keyInput").create({x:4,y:18},lib.KeyboardInput)

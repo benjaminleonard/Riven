@@ -73,8 +73,9 @@ svg#riven g#routes path.route.bidirectional { stroke-dasharray: 10,5; stroke-das
 .inline-output * {
   position: absolute;
   top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
 }
 
 #container {
