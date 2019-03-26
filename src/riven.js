@@ -25,6 +25,8 @@ function Riven () {
 
     this.cur = new RIVEN.Cursor()
     this.cur.install(this)
+    
+    // this.patchGrid()
   }
 
   this.add = function (node) {
@@ -39,6 +41,30 @@ function Riven () {
       this.el = patch(this.el, newEl)
     })
   }
+  
+  this.patchGrid = function () {
+    this.gridEl = document.getElementById('grid')
+    const grid = this.renderGrid()
+    this.gridEl = patch(this.gridEl, grid)
+  }
+  
+  this.renderGrid = function () {
+    let grid = []
+    const size = GRID_SIZE * 100
+    
+    for(let x = 0; x < 100; x++) {
+      for(let y = 0; y < 100; y++) {
+        const circle = <circle cx={GRID_SIZE * x - size / 4} cy={GRID_SIZE * y - GRID_SIZE / 2  - size / 4} r={GRID_SIZE / 20} className="grid-circle" />
+        grid.push(circle)
+      }
+    }
+        
+    return (
+      <svg id="grid">
+        {grid}
+      </svg>
+    )
+  }
 
   this.concatNodes = function () {
     const nodes = this.renderNodes()
@@ -46,13 +72,9 @@ function Riven () {
     const html = this.renderHTMLTags()
 
     if(nodes.length == 0 || routes.length == 0) return this.el
-
     return (
       <main
         id="container"
-        style={{
-          transform: `translate(${parseInt(this.cur.offset.x)}px,${parseInt(this.cur.offset.y)}px)`
-        }}
       >
         <div id="inline_html">
           {html}
@@ -559,6 +581,7 @@ RIVEN.Cursor = function () {
   this.pos = { x: 0, y: 0 }
   this.offset =  { x: 0, y: 0 }
   this.origin = null
+  this.canvas = document.querySelector('#canvas')
 
   this.install = function (host) {
     this.host = host
@@ -568,7 +591,9 @@ RIVEN.Cursor = function () {
   }
 
   this.update = function () {
-    this.host.render()
+    // this.host.render()
+    this.canvas.style.transform = `translate(${parseInt(this.offset.x)}px,${parseInt(this.offset.y)}px)`
+    // transform: `translate(${parseInt(this.cur.offset.x)}px,${parseInt(this.cur.offset.y)}px)`
   }
 
   this.touch = function (pos, click = null) {

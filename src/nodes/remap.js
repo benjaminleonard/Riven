@@ -13,6 +13,7 @@ RIVEN.lib.Remap = function (id, rect, val) {
     if(decimals !== undefined) {
       mappedVal = round(mappedVal, decimals)
     }
+    this.label = val ? `${this.id}=${val}:${mappedVal}` : this.id
     this.send(mappedVal)
   }
 

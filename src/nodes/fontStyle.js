@@ -1,6 +1,6 @@
 const {RIVEN, Ø}  = require('../riven')
 
-RIVEN.lib.Attribute = function (id, rect, val, units) {
+RIVEN.lib.FontStyle = function (id, rect, val, units) {
   RIVEN.Node.call(this, id, rect)
 
   this.enabledPorts = ['in', 'answer']
