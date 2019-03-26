@@ -2,6 +2,10 @@ module.exports = {
   "watch": true,
   "mode": "development",
   "entry": "./src/index.js",
+  "optimization": {
+      // We no not want to minimize our code.
+    "minimize": false
+  },
   "output": {
     "path": __dirname + '/public/js',
     "filename": "[name].js"

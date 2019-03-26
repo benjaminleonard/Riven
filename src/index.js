@@ -7,12 +7,14 @@ require('./nodes/value')
 require('./nodes/interval')
 require('./nodes/console')
 require('./nodes/bang')
-require('./nodes/InlineOutput')
+require('./nodes/inlineOutput')
 require('./nodes/text')
 require('./nodes/keyboardInput')
 require('./nodes/attribute')
 require('./nodes/randomName')
 require('./nodes/sine')
+require('./nodes/bangOnUpdate')
+require('./nodes/remap')
 
 document.addEventListener('DOMContentLoaded', () => {
   RIVEN.setup()
@@ -20,32 +22,43 @@ document.addEventListener('DOMContentLoaded', () => {
   const lib = RIVEN.lib
 
   RIVEN.create = (append = true) => {
-    Ø("bang").create({x:2,y:14},lib.Bang)
-    Ø("interval").create({x:2,y:18},lib.Interval,16.67)
+    Ø("interval").create({x:2,y:18},lib.Interval, 16.67)
 
     // Ø("keyInput").create({x:8,y:14},lib.KeyboardInput)
-    Ø("string").create({x:8,y:14},lib.Value, "Test")
-    // Ø("randomName").create({x:8,y:14},lib.RandomName)
-    Ø("text").create({x:14,y:14},lib.Text)
-    Ø("fontFamily").create({x:12,y:22},lib.Attribute, {fontFamily: 'Chronicle Display'})
-    Ø("fontSize").create({x:16,y:18},lib.Attribute, {fontSize: '40'})
+    // Ø("string").create({x:8,y:14},lib.Value, "Test")
+    Ø("randomName").create({x:8,y:14},lib.RandomName)
+    // Ø("text").create({x:14,y:14},lib.Text)
+    Ø("fontFamily").create({x:14,y:22},lib.Attribute, {fontFamily: 'Chronicle Display'})
+    Ø("fontSize").create({x:18,y:26},lib.Attribute, {fontSize: '40'}, 'px')
     // Ø("fontSize").create({x:14,y:18},lib.FontSize, 'Chronicle Display')
-    
-    Ø("sine").create({x:8,y:22},lib.Sine)
+
+    Ø("bang").create({x:2,y:14},lib.Bang)
+    Ø("bangOnUpdate").create({x:14,y:14},lib.BangOnUpdate,[
+      Ø("text").create({x:0,y:0},lib.Text)
+    ], "text", "text")
+
+    // Ø("console").create({x:24,y:30},lib.Console)
+
+    Ø("sine").create({x:8,y:28},lib.Sine)
+    Ø("remap").create({x:13,y:28},lib.Remap, [-1, 1, 10, 80, 2])
 
     // Ø("keyInput").create({x:4,y:18},lib.KeyboardInput)
-    // Ø("console").create({x:20,y:10},lib.Console)
 
     Ø("output").create({x:24,y:14},lib.InlineOutput)
-    
-    Ø("sine").connect(["fontSize"])
-    Ø("string").connect(["text"])
-    Ø("interval").connect(["string"])
-    Ø("bang").connect(["keyInput"])
+
+    Ø("sine").connect(["remap"])
+    Ø("remap").connect(["fontSize"])
+
+
+    Ø("bang").connect(["randomName"])
+    Ø("randomName").connect(["bangOnUpdate"])
+    Ø("bangOnUpdate").connect(["output"])
+    // Ø("string").connect(["text"])
     Ø("interval").connect(["sine"])
-    Ø("keyInput").connect(["text"])
-    Ø("text").syphon(["fontFamily", "fontSize"])
-    Ø("text").connect(["output"])
+    // Ø("keyInput").connect(["text"])
+    // Ø("text").syphon(["fontFamily"])
+    Ø("bangOnUpdate").syphon(["fontSize", "fontFamily"])
+    // Ø("text").connect(["output"])
     // Ø("bang").ports[1].disconnect(Ø("string"))
 
     // // Int nodes

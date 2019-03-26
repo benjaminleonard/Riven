@@ -11,12 +11,13 @@ RIVEN.lib.RandomName = function (id, rect, val) {
   }
 
   this.receive = function (q) {
-    const self = this
-
     axios.get(url)
     .then((data) => {
       const name = data.data.results[0].name
-      this.send(`${name.first} ${name.last}`)
+      const joinedName = `${name.first} ${name.last}`
+
+      this.label = joinedName ? `${this.id}=${joinedName}` : this.id
+      this.send(joinedName)
     })
   }
 }

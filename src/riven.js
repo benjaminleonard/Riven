@@ -57,7 +57,7 @@ function Riven () {
         <div id="inline_html">
           {html}
         </div>
-        
+
         <svg
           id="riven"
         >
@@ -115,16 +115,6 @@ function Riven () {
     return routes
   }
 
-  this.drawPorts = (node) => {
-    let portData = []
-
-    Object.keys(node.ports).reduce((acc, val, id) => {
-      portData.push(this.drawPort(node.ports[val]))
-    }, '')
-
-    return portData
-  }
-
   this.renderNode = (node) => {
     const rect = getRect(node)
     const ports = this.drawPorts(node)
@@ -133,7 +123,7 @@ function Riven () {
     return (
       <g
         id={`node_${node.id}`}
-        className="node"
+        className={`node ${node.name}`}
         on-click={[this.nodeClickHandler, node]}
       >
         <rect
@@ -187,7 +177,9 @@ function Riven () {
     let portData = []
 
     Object.keys(node.ports).reduce((acc, val, id) => {
-      portData.push(this.drawPort(node.ports[val]))
+      const port = node.ports[val]
+      if(!node.enabledPorts.includes(port.id)) return true
+      portData.push(this.drawPort(port))
     }, '')
 
     return portData
@@ -263,27 +255,17 @@ function Riven () {
   }
 
   this.drawConnection = (a, b) => {
-    if (isBidirectional(a.host, b.host)) {
-      return a.type !== PORT_TYPES.output ? this.drawConnectionBidirectional(a, b) : ''
+    if (a.type === PORT_TYPES.entry) {
+      return this.drawConnectionEntry(a, b)
+    }
+    if (b.type === PORT_TYPES.exit) {
+      return this.drawConnectionExit(a, b)
     }
     return a.type === PORT_TYPES.output || a.type === PORT_TYPES.output ? this.drawConnectionOutput(a, b) : this.drawConnectionRequest(a, b)
   }
 
-  function isBidirectional (a, b) {
-    for (const id in a.ports.output.routes) {
-      const routeA = a.ports.output.routes[id]
-      for (const id in a.ports.request.routes) {
-        const routeB = a.ports.request.routes[id]
-        if (routeA.host.id === routeB.host.id) {
-          return true
-        }
-      }
-    }
-    return false
-  }
-
   const outputPath = (posA, posB, posM, posC1, posC2) => `M${posA.x},${posA.y} L${posA.x + GRID_SIZE},${posA.y} Q${posC1.x},${posC1.y} ${posM.x},${posM.y} Q ${posC2.x},${posC2.y} ${posB.x - GRID_SIZE},${posB.y} L${posB.x},${posB.y}`
-  const bidirectionalRoutePath = (posA, posB, posM) => `M${posA.x},${posA.y} L${posA.x},${posA.y + GRID_SIZE} L${posA.x},${posM.y} L${posB.x},${posM.y} L${posB.x},${posB.y - GRID_SIZE} L${posB.x},${posB.y}`
+  const requestPath = (posA, posB, posM) => `M${posA.x},${posA.y} L${posA.x},${posA.y + GRID_SIZE} L${posA.x},${posM.y} L${posB.x},${posM.y} L${posB.x},${posB.y - GRID_SIZE} L${posB.x},${posB.y}`
   const disconnectPath = (posM, r) => `M${posM.x - r},${posM.y - r} L${posM.x + r},${posM.y + r} M${posM.x + r},${posM.y - r} L${posM.x - r},${posM.y + r}`
 
   this.drawConnectionOutput = (a, b) => {
@@ -335,11 +317,11 @@ function Riven () {
       >
         <path
           className="route request"
-          d={bidirectionalRoutePath(posA, posB, posM)}
+          d={requestPath(posA, posB, posM)}
         />
         <path
           className="route route-hover-area"
-          d={bidirectionalRoutePath(posA, posB, posM)}
+          d={requestPath(posA, posB, posM)}
           on-click={[this.routeClickHandler, a, b]}
         />
         <path
@@ -351,27 +333,43 @@ function Riven () {
     )
   }
 
-  this.drawConnectionBidirectional = (a, b) => {
+  this.drawConnectionEntry = (a, b) => {
     const posA = getPortPosition(a)
     const posB = getPortPosition(b)
-    const posM = middle(posA, posB)
 
-    const r = GRID_SIZE / 4
-
-    const path = `M${posA.x},${posA.y} L${posA.x},${posA.y + GRID_SIZE}
-        L${posA.x},${posM.y} L${posB.x},${posM.y}
-        L${posB.x},${posB.y - GRID_SIZE} L${posB.x},${posB.y}`
-
-
-    return h('path', {attrs: {
-        class: `route bidirectional`,
-        d: `M${posA.x},${posA.y} L${posA.x},${posA.y + GRID_SIZE}
-            L${posA.x},${posM.y} L${posB.x},${posM.y}
-            L${posB.x},${posB.y - GRID_SIZE} L${posB.x},${posB.y}`
-      }}
+    return (
+      <g
+        className="route-wrapper"
+      >
+        <path
+          className="route entry"
+          d={`M${posA.x},${posA.y} L${posA.x + GRID_SIZE},${posA.y}
+              L${posA.x + GRID_SIZE},${posA.y}
+              L${posA.x + GRID_SIZE},${posB.y}
+              L${posB.x},${posB.y}`}
+        />
+      </g>
     )
   }
 
+  this.drawConnectionExit = (a, b) => {
+    const posA = getPortPosition(a)
+    const posB = getPortPosition(b)
+
+    return (
+      <g
+        className="route-wrapper"
+      >
+        <path
+          className="route ext"
+          d={`M${posA.x},${posA.y} L${posA.x + GRID_SIZE},${posA.y}
+              L${posB.x - GRID_SIZE},${posA.y}
+              L${posB.x - GRID_SIZE},${posB.y}
+              L${posB.x},${posB.y}`}
+        />
+      </g>
+    )
+  }
 
   function getRect (node) {
     const w = node.rect.w * GRID_SIZE
@@ -427,8 +425,9 @@ RIVEN.Node = function (id, rect = { x: 0, y: 0, w: 2, h: 2 }) {
   this.parent = null
   this.children = []
   this.label = id
-  this.name = this.constructor.name.toLowerCase()
+  this.name = ''
   this.glyph = 'M155,65 A90,90 0 0,1 245,155 A90,90 0 0,1 155,245 A90,90 0 0,1 65,155 A90,90 0 0,1 155,65 Z'
+  this.enabledPorts = ['in', 'out', 'request', 'answer']
 
   this.setup = function (pos) {
     this.ports.input = new this.Port(this, 'in', PORT_TYPES.input)

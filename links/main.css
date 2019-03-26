@@ -32,7 +32,7 @@ svg#riven g#nodes g.node .glyph { stroke-width:10; stroke:#fff; }
 svg#riven g#nodes g.node rect { stroke:white; fill:black; stroke-width:1; }
 svg#riven g#nodes g.node:hover rect { fill:white; cursor: hand; }
 svg#riven g#nodes g.node:hover path.glyph { stroke:#000; stroke-width:12; }
-svg#riven g#nodes g.node.meshnode rect {fill:none; stroke:var(--f_low); stroke-width:2;}
+svg#riven g#nodes g.node.meshnode rect, svg#riven g#nodes g.node.bang-on-update rect {fill:transparent; stroke:var(--f_low); stroke-width:2;}
 svg#riven g#nodes g.node.meshnode .port { display: none; }
 
 /* Ports */
